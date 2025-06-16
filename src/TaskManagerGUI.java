@@ -134,7 +134,8 @@ public class TaskManagerGUI extends JFrame implements ActionListener {
             tasks = tasks.stream().filter(t -> !t.isCompleted()).collect(Collectors.toList());//?????
         }
         for (Task task : tasks) {
-            tableModel.addRow(new Object[]{task.getId(),task.getTitle(),task.getDescription(),task.getDueDate(),task.isCompleted()});
+            String completedStr = task.isCompleted() ? "Yes" : "No";
+            tableModel.addRow(new Object[]{task.getId(),task.getTitle(),task.getDescription(),task.getDueDate(),completedStr});
         }
         }
     }
