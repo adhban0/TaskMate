@@ -77,7 +77,7 @@ public class TaskManagerGUI extends JFrame implements ActionListener {
                 refreshTable();
             }
             else{
-                JOptionPane.showMessageDialog(this, "Please select a task to delete.");
+                JOptionPane.showMessageDialog(this, "Please select a task to delete.","Unselected Task",JOptionPane.WARNING_MESSAGE);
             }
         }
         else if (e.getSource()==editBtn) {
@@ -101,7 +101,7 @@ public class TaskManagerGUI extends JFrame implements ActionListener {
                     }
                 }
             } else {
-                JOptionPane.showMessageDialog(this, "Please select a task to edit.");
+                JOptionPane.showMessageDialog(this, "Please select a task to edit.","Unselected Task",JOptionPane.WARNING_MESSAGE);
             }
         }
         else if (e.getSource()==completeBtn){
@@ -114,12 +114,12 @@ public class TaskManagerGUI extends JFrame implements ActionListener {
                     refreshTable();
                 }
             }
+            else {
+                JOptionPane.showMessageDialog(this, "Please select a task to mark as completed.","Unselected Task",JOptionPane.WARNING_MESSAGE);
+            }
         }
             else if (e.getSource()==filterBox){
             refreshTable();
-            }
-            else {
-                JOptionPane.showMessageDialog(this, "Please select a task to mark as completed.");
             }
         }
 

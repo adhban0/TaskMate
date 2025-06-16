@@ -42,7 +42,7 @@ public class LoginGUI extends JFrame implements ActionListener {
             dispose();
         }
         else{
-            JOptionPane.showMessageDialog(this,"Wrong username or password. Try again");
+            JOptionPane.showMessageDialog(this,"Wrong username or password. Try again","Wrong Credentials",JOptionPane.WARNING_MESSAGE);
         }
     }
 }
