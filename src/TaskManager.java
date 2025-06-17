@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.List;
 
 public class TaskManager {
     private ArrayList<Task> taskList = new ArrayList<>();
@@ -9,13 +10,10 @@ public class TaskManager {
 
 
 
-    public void deleteTask(int id){
-        for (Task task : taskList) {
-            if (id == task.getId()) {
-                taskList.remove(task);
-            }
-        }
+    public void deleteTasks(List<Integer> ids) {
+        taskList.removeIf(task -> ids.contains(task.getId()));
     }
+
     public ArrayList<Task> getTaskList() {
         return taskList;
     }

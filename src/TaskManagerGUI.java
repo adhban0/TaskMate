@@ -2,6 +2,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -72,10 +73,12 @@ public class TaskManagerGUI extends JFrame implements ActionListener {
         else if (e.getSource()==deleteBtn){
             int [] rows  = taskTable.getSelectedRows();
             if (rows.length >= 0){//?????
-                for (int i = rows.length - 1;i>=0;i--){
-                    int id = (int) tableModel.getValueAt(rows[i],0);
-                    taskManager.deleteTask(id);
+                List<Integer> ids = new ArrayList<>();
+                for (int row : rows){
+                    int id = (int) tableModel.getValueAt(row,0);
+                    ids.add(id);
                 }
+                taskManager.deleteTasks(ids);
                 refreshTable();
             }
             else{
