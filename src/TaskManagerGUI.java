@@ -68,8 +68,12 @@ public class TaskManagerGUI extends JFrame implements ActionListener {
             Object[] fields = {"Title:",titleField,"Description:",descField,"Due Date:",dateField};
             int option = JOptionPane.showConfirmDialog(this,fields,"Add New Task",JOptionPane.OK_CANCEL_OPTION);
             if (option == JOptionPane.OK_OPTION){
+                if (titleField.getText().trim().isEmpty()){
+                    JOptionPane.showMessageDialog(this,"Title is required.","Missing Title",JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
                 LocalDateTime dueDate = dateField.getDateTimeStrict();
-                taskManager.addTask(titleField.getText(),descField.getText(),dueDate);
+                taskManager.addTask(titleField.getText().trim(),descField.getText().trim(),dueDate);
                 refreshTable();
             }
         }
@@ -99,9 +103,13 @@ public class TaskManagerGUI extends JFrame implements ActionListener {
 
                     int option = JOptionPane.showConfirmDialog(this, fields, "Edit Task", JOptionPane.OK_CANCEL_OPTION);
                     if (option == JOptionPane.OK_OPTION) {
+                        if (titleField.getText().trim().isEmpty()){
+                            JOptionPane.showMessageDialog(this,"Title is required.","Missing Title",JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
                         LocalDateTime dueDate = dateField.getDateTimeStrict();
-                        task.setTitle(titleField.getText());
-                        task.setDescription(descField.getText());
+                        task.setTitle(titleField.getText().trim());
+                        task.setDescription(descField.getText().trim());
                         task.setDueDate(dueDate);
                         refreshTable();
                     }
@@ -141,7 +149,7 @@ public class TaskManagerGUI extends JFrame implements ActionListener {
             tasks = tasks.stream().filter(t -> !t.isCompleted()).collect(Collectors.toList());//?????
         }
         for (Task task : tasks) {
-            tableModel.addRow(new Object[]{task.getId(),task.getTitle(),task.getDescription(),task.getDueDate().format(formatter),task.isCompleted()});
+            tableModel.addRow(new Object[]{task.getId(),task.getTitle(),task.getDescription(),task.getDueDate() != null ?task.getDueDate().format(formatter):"",task.isCompleted()});
         }
         }
     }
