@@ -49,7 +49,7 @@ public class TaskManagerGUI extends JFrame implements ActionListener {
             }
         };
         taskTable = new JTable(tableModel);
-//        taskTable.editab
+        taskTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         JScrollPane scrollPane = new JScrollPane(taskTable);
         scrollPane.setBounds(20, 70, 550, 250);
         add(scrollPane);
@@ -70,19 +70,22 @@ public class TaskManagerGUI extends JFrame implements ActionListener {
             }
         }
         else if (e.getSource()==deleteBtn){
-            int row  = taskTable.getSelectedRow();
-            if (row >= 0){//?????
-                int id = (int) tableModel.getValueAt(row,0);
-                taskManager.deleteTask(id);
+            int [] rows  = taskTable.getSelectedRows();
+            if (rows.length >= 0){//?????
+                for (int i = rows.length - 1;i>=0;i--){
+                    int id = (int) tableModel.getValueAt(rows[i],0);
+                    taskManager.deleteTask(id);
+                }
                 refreshTable();
             }
             else{
-                JOptionPane.showMessageDialog(this, "Please select a task to delete.","Unselected Task",JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Please select at least one task to delete.","Unselected Task",JOptionPane.WARNING_MESSAGE);
             }
         }
         else if (e.getSource()==editBtn) {
-            int row = taskTable.getSelectedRow();
-            if (row >= 0) {
+            int [] rows = taskTable.getSelectedRows();
+            if (rows.length == 1) {
+                int row = rows[0];
                 int id = (int) tableModel.getValueAt(row, 0);
                 Task task = taskManager.getTask(id);
                 if (task != null) {
@@ -100,22 +103,27 @@ public class TaskManagerGUI extends JFrame implements ActionListener {
                         refreshTable();
                     }
                 }
-            } else {
+            }
+            else if (rows.length > 1){               JOptionPane.showMessageDialog(this, "Please select only one task to edit.","Unselected Task",JOptionPane.WARNING_MESSAGE);
+            }
+            else {
                 JOptionPane.showMessageDialog(this, "Please select a task to edit.","Unselected Task",JOptionPane.WARNING_MESSAGE);
             }
         }
         else if (e.getSource()==completeBtn){
-            int row = taskTable.getSelectedRow();
-            if (row >= 0) {
-                int id = (int) tableModel.getValueAt(row, 0);
-                Task task = taskManager.getTask(id);
-                if (task != null && !task.isCompleted()) {
-                    task.markCompleted();
-                    refreshTable();
+            int [] rows  = taskTable.getSelectedRows();
+            if (rows.length >= 0){
+                for (int row : rows){
+                    int id = (int) tableModel.getValueAt(row, 0);
+                    Task task = taskManager.getTask(id);
+                    if (task != null && !task.isCompleted()) {
+                        task.markCompleted();
+                    }
                 }
+                refreshTable();
             }
             else {
-                JOptionPane.showMessageDialog(this, "Please select a task to mark as completed.","Unselected Task",JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Please select at least one task to mark as completed.","Unselected Task",JOptionPane.WARNING_MESSAGE);
             }
         }
             else if (e.getSource()==filterBox){
