@@ -98,7 +98,8 @@ public class TaskManagerGUI extends JFrame implements ActionListener {
                     JTextField descField = new JTextField(task.getDescription());
                     DateTimePicker dateField = new DateTimePicker();
                     dateField.setDateTimePermissive(task.getDueDate());
-
+                    dateField.getDatePicker().getComponentDateTextField().setEditable(false);
+                    dateField.getTimePicker().getComponentTimeTextField().setEditable(false);
                     Object[] fields = {"Title:",titleField,"Description:",descField,"Due Date:",dateField};
 
                     int option = JOptionPane.showConfirmDialog(this, fields, "Edit Task", JOptionPane.OK_CANCEL_OPTION);
