@@ -3,8 +3,11 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
+import com.github.lgooddatepicker.components.DateTimePicker;
 
 public class TaskManagerGUI extends JFrame implements ActionListener {
     private TaskManager taskManager;
@@ -61,12 +64,17 @@ public class TaskManagerGUI extends JFrame implements ActionListener {
         if (e.getSource() == addBtn){
             JTextField titleField = new JTextField();
             JTextField descField = new JTextField();
-            JTextField dateField = new JTextField();
+            DateTimePicker dateField = new DateTimePicker();
 
             Object[] fields = {"Title:",titleField,"Description:",descField,"Due Date:",dateField};
             int option = JOptionPane.showConfirmDialog(this,fields,"Add New Task",JOptionPane.OK_CANCEL_OPTION);
             if (option == JOptionPane.OK_OPTION){
-                taskManager.addTask(titleField.getText(),descField.getText(),dateField.getText());
+                if (titleField.getText().trim().isEmpty()){
+                    JOptionPane.showMessageDialog(this,"Title is required.","Missing Title",JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                LocalDateTime dueDate = dateField.getDateTimeStrict();
+                taskManager.addTask(titleField.getText().trim(),descField.getText().trim(),dueDate);
                 refreshTable();
             }
         }
@@ -94,15 +102,22 @@ public class TaskManagerGUI extends JFrame implements ActionListener {
                 if (task != null) {
                     JTextField titleField = new JTextField(task.getTitle());
                     JTextField descField = new JTextField(task.getDescription());
-                    JTextField dateField = new JTextField(task.getDueDate());
-
+                    DateTimePicker dateField = new DateTimePicker();
+                    dateField.setDateTimePermissive(task.getDueDate());
+                    dateField.getDatePicker().getComponentDateTextField().setEditable(false);
+                    dateField.getTimePicker().getComponentTimeTextField().setEditable(false);
                     Object[] fields = {"Title:",titleField,"Description:",descField,"Due Date:",dateField};
 
                     int option = JOptionPane.showConfirmDialog(this, fields, "Edit Task", JOptionPane.OK_CANCEL_OPTION);
                     if (option == JOptionPane.OK_OPTION) {
-                        task.setTitle(titleField.getText());
-                        task.setDescription(descField.getText());
-                        task.setDueDate(dateField.getText());
+                        if (titleField.getText().trim().isEmpty()){
+                            JOptionPane.showMessageDialog(this,"Title is required.","Missing Title",JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+                        LocalDateTime dueDate = dateField.getDateTimeStrict();
+                        task.setTitle(titleField.getText().trim());
+                        task.setDescription(descField.getText().trim());
+                        task.setDueDate(dueDate);
                         refreshTable();
                     }
                 }
@@ -138,6 +153,7 @@ public class TaskManagerGUI extends JFrame implements ActionListener {
         tableModel.setRowCount(0);
         List<Task> tasks = taskManager.getTaskList();
         String filter = (String) filterBox.getSelectedItem();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
         if (filter.equals("Completed")){
             tasks = tasks.stream().filter(Task::isCompleted).collect(Collectors.toList());//?????
         }
@@ -146,7 +162,7 @@ public class TaskManagerGUI extends JFrame implements ActionListener {
         }
         for (Task task : tasks) {
             String completedStr = task.isCompleted() ? "Yes" : "No";
-            tableModel.addRow(new Object[]{task.getId(),task.getTitle(),task.getDescription(),task.getDueDate(),completedStr});
+            tableModel.addRow(new Object[]{task.getId(),task.getTitle(),task.getDescription(),task.getDueDate() != null ?task.getDueDate().format(formatter):"",completedStr});
         }
         }
     }

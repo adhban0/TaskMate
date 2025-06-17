@@ -1,11 +1,13 @@
+import java.time.LocalDateTime;
+
 public class Task {
     private int id;
     private String Title;
     private String description;
-    private String dueDate;
+    private LocalDateTime dueDate;
     private boolean isCompleted;
 
-    public Task(int id, String title, String description, String dueDate) {
+    public Task(int id, String title, String description, LocalDateTime dueDate) {
         this.id = id;
         Title = title;
         this.description = description;
@@ -37,11 +39,11 @@ public class Task {
         this.description = description;
     }
 
-    public String getDueDate() {
+    public LocalDateTime getDueDate() {
         return dueDate;
     }
 
-    public void setDueDate(String dueDate) {
+    public void setDueDate(LocalDateTime dueDate) {
         this.dueDate = dueDate;
     }
 
