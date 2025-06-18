@@ -54,4 +54,8 @@ public class Task {
     public void markCompleted() {
         isCompleted = true;
     }
+
+    public void setCompleted(boolean completed) {
+        isCompleted = completed;
+    }
 }

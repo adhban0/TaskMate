@@ -8,6 +8,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 import com.github.lgooddatepicker.components.DateTimePicker;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.*;
 
 public class TaskManagerGUI extends JFrame implements ActionListener {
     private TaskManager taskManager;
@@ -15,6 +18,56 @@ public class TaskManagerGUI extends JFrame implements ActionListener {
     private DefaultTableModel tableModel;
     private JButton addBtn, deleteBtn,editBtn,completeBtn;
     private JComboBox<String> filterBox;
+    private final String CSV_FILE = "g://tasks.csv";
+    private final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+    // Load tasks from CSV on startup
+    private void loadTasksFromCSV() {
+        try (BufferedReader br = new BufferedReader(new FileReader(CSV_FILE))) {
+            String line;
+            br.readLine();
+            while ((line = br.readLine()) != null) {
+                String[] parts = parseCSVLine(line);//line.split(",", -1);
+                if (parts.length == 5) {
+                    int id = Integer.parseInt(parts[0]);
+                    String title = parts[1];
+                    String description = parts[2];
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+                    LocalDateTime dueDate = parts[3].isEmpty() ? null : LocalDateTime.parse(parts[3], formatter);
+                    String completedStr = parts[4];
+                    taskManager.addTask(title, description, dueDate);
+                    Task created = taskManager.getTaskList().get(taskManager.getTaskList().size() - 1);
+                    if (completedStr.equals("Yes"))
+                    {created.setCompleted(true);}
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("No CSV to load: " + e.getMessage());
+        }
+    }
+
+    // Save tasks to CSV on close
+    public void saveTasksToCSV() {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(CSV_FILE))) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+
+            // Write header
+            writer.write("ID,Title,Description,DueDate,Completed");
+            writer.newLine();
+
+            // Write each task
+            for (Task task : taskManager.getTaskList()) {
+                String dueDateStr = task.getDueDate() != null ? task.getDueDate().format(formatter) : "";
+                String completedStr = task.isCompleted() ? "Yes" : "No";
+                writer.write(task.getId() + "," + escape(task.getTitle()) + "," + escape(task.getDescription()) + "," + dueDateStr + "," + completedStr);
+                writer.newLine();
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
     public TaskManagerGUI(){
         taskManager = new TaskManager();
         setTitle("TaskMate - Task Manager");
@@ -57,6 +110,14 @@ public class TaskManagerGUI extends JFrame implements ActionListener {
         JScrollPane scrollPane = new JScrollPane(taskTable);
         scrollPane.setBounds(20, 70, 550, 250);
         add(scrollPane);
+
+        loadTasksFromCSV();
+        refreshTable();
+
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+               saveTasksToCSV();
+        }});
     }
 
     @Override
@@ -153,7 +214,6 @@ public class TaskManagerGUI extends JFrame implements ActionListener {
         tableModel.setRowCount(0);
         List<Task> tasks = taskManager.getTaskList();
         String filter = (String) filterBox.getSelectedItem();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
         if (filter.equals("Completed")){
             tasks = tasks.stream().filter(Task::isCompleted).collect(Collectors.toList());//?????
         }
@@ -162,8 +222,34 @@ public class TaskManagerGUI extends JFrame implements ActionListener {
         }
         for (Task task : tasks) {
             String completedStr = task.isCompleted() ? "Yes" : "No";
-            tableModel.addRow(new Object[]{task.getId(),task.getTitle(),task.getDescription(),task.getDueDate() != null ?task.getDueDate().format(formatter):"",completedStr});
+            tableModel.addRow(new Object[]{task.getId(),task.getTitle(),task.getDescription(),task.getDueDate() != null ?task.getDueDate().format(FORMATTER):"",completedStr});
         }
         }
+    private String escape(String text) {
+        if (text.contains(",") || text.contains("\"")) {
+            text = text.replace("\"", "\"\"");
+            return "\"" + text + "\"";
+        }
+        return text;
     }
+    private String[] parseCSVLine(String line) {
+        List<String> result = new ArrayList<>();
+        StringBuilder sb = new StringBuilder();
+        boolean insideQuotes = false;
+
+        for (char c : line.toCharArray()) {
+            if (c == '"') {
+                insideQuotes = !insideQuotes;
+            } else if (c == ',' && !insideQuotes) {
+                result.add(sb.toString().trim());
+                sb.setLength(0);
+            } else {
+                sb.append(c);
+            }
+        }
+        result.add(sb.toString().trim());
+        return result.toArray(new String[0]);
+    }
+
+}
 
