@@ -145,6 +145,9 @@ public class TaskManagerGUI extends JFrame implements ActionListener {
                     return;
                 }
                 LocalDateTime dueDate = dateField.getDateTimeStrict();
+                if (dueDate == null && dateField.getDatePicker().getDate() != null) {
+                    dueDate = dateField.getDatePicker().getDate().atTime(0, 0);
+                }
                 taskManager.addTask(titleField.getText().trim(),descField.getText().trim(),dueDate);
                 refreshTable();
             }
@@ -195,6 +198,9 @@ public class TaskManagerGUI extends JFrame implements ActionListener {
                             return;
                         }
                         LocalDateTime dueDate = dateField.getDateTimeStrict();
+                        if (dueDate == null && dateField.getDatePicker().getDate() != null) {
+                            dueDate = dateField.getDatePicker().getDate().atTime(0, 0);
+                        }
                         task.setTitle(titleField.getText().trim());
                         task.setDescription(descField.getText().trim());
                         task.setDueDate(dueDate);
