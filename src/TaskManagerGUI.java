@@ -72,7 +72,7 @@ public class TaskManagerGUI extends JFrame implements ActionListener {
         taskManager = new TaskManager();
         setTitle("TaskMate - Task Manager");
         setSize(600,400);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         setLayout(null);
         addBtn = new JButton("Add Task");
         addBtn.setBounds(20, 20, 120, 30);
@@ -116,8 +116,18 @@ public class TaskManagerGUI extends JFrame implements ActionListener {
 
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
-               saveTasksToCSV();
-        }});
+                    int option = JOptionPane.showConfirmDialog(TaskManagerGUI.this, "Do you want to save tasks before exiting?", "Exit", JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE);
+
+                    if (option == JOptionPane.CANCEL_OPTION || option == JOptionPane.CLOSED_OPTION) {
+                        return; // Do nothing, user canceled
+                    }
+
+                    if (option == JOptionPane.YES_OPTION) {
+                        saveTasksToCSV();
+                    }
+                    System.exit(0); // Close the app manually
+                }
+        });
     }
 
     @Override
@@ -140,15 +150,24 @@ public class TaskManagerGUI extends JFrame implements ActionListener {
             }
         }
         else if (e.getSource()==deleteBtn){
+
             int [] rows  = taskTable.getSelectedRows();
-            if (rows.length >= 0){//?????
-                List<Integer> ids = new ArrayList<>();
-                for (int row : rows){
-                    int id = (int) tableModel.getValueAt(row,0);
-                    ids.add(id);
+            if (rows.length >= 1){//?????
+                int option = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete these task(s)?", "Delete", JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE);
+
+                if (option == JOptionPane.CANCEL_OPTION || option == JOptionPane.CLOSED_OPTION || option == JOptionPane.NO_OPTION) {
+                    return; // Do nothing, user canceled
                 }
-                taskManager.deleteTasks(ids);
-                refreshTable();
+
+                if (option == JOptionPane.YES_OPTION) {
+                    List<Integer> ids = new ArrayList<>();
+                    for (int row : rows){
+                        int id = (int) tableModel.getValueAt(row,0);
+                        ids.add(id);
+                    }
+                    taskManager.deleteTasks(ids);
+                    refreshTable();
+                }
             }
             else{
                 JOptionPane.showMessageDialog(this, "Please select at least one task to delete.","Unselected Task",JOptionPane.WARNING_MESSAGE);
