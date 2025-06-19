@@ -1,17 +1,21 @@
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class LoginGUI extends JFrame implements ActionListener {
     JLabel userLabel, passLabel;
     JTextField userField;
     JPasswordField passField;
     JButton loginBtn;
+    JLabel registerLabel;
     DBHelper db;
     public LoginGUI(){
         db = new DBHelper();
         setTitle("TaskMate Login");
-        setSize(300,150);
+        setSize(300,200);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(null);
         userLabel = new JLabel("Username:");
@@ -30,6 +34,18 @@ public class LoginGUI extends JFrame implements ActionListener {
         loginBtn.setBounds(100, 80, 80, 25);
         loginBtn.addActionListener(this);
         add(loginBtn);
+        registerLabel = new JLabel("<HTML><U>Don't have an account? Register here</U></HTML>");
+        registerLabel.setForeground(Color.BLUE);
+        registerLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        registerLabel.setBounds(40, 115, 220, 25); // adjust as needed
+        registerLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                dispose(); // close the login window
+                new RegisterGUI().setVisible(true); // open registration window
+            }
+        });
+        add(registerLabel);
 
     }
     @Override
