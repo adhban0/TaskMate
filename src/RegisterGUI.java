@@ -1,4 +1,6 @@
 import javax.swing.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class RegisterGUI extends JFrame{
         JLabel userLabel, passLabel;
@@ -9,9 +11,9 @@ public class RegisterGUI extends JFrame{
         DBHelper db;
         public RegisterGUI(){
             db = new DBHelper();
-            setTitle("TaskMate Login");
+            setTitle("TaskMate Registration");
             setSize(300,200);
-            setDefaultCloseOperation(EXIT_ON_CLOSE);
+            setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
             setLayout(null);
             userLabel = new JLabel("Username:");
             userLabel.setBounds(10,10,80,25);
@@ -26,7 +28,7 @@ public class RegisterGUI extends JFrame{
             passField.setBounds(100, 40, 160, 25);
             add(passField);
             registerBtn = new JButton("Register");
-            registerBtn.setBounds(100, 80, 80, 25);
+            registerBtn.setBounds(100, 80, 100, 25);
             registerBtn.addActionListener(e -> {
                 String username = userField.getText();
                 String password = new String(passField.getPassword());
@@ -37,6 +39,17 @@ public class RegisterGUI extends JFrame{
                 }
             });
             add(registerBtn);
+            addWindowListener(new WindowAdapter() {
+                public void windowClosing(WindowEvent e) {
+                    int option = JOptionPane.showConfirmDialog(RegisterGUI.this, "Are you sure you want to exit?", "Exit", JOptionPane.YES_NO_OPTION,JOptionPane.WARNING_MESSAGE);
+
+                    if (option == JOptionPane.NO_OPTION || option == JOptionPane.CLOSED_OPTION) {
+                        return; // Do nothing, user canceled
+                    }
+
+                    System.exit(0); // Close the app manually
+                }
+            });
         }
 
     }

@@ -1,9 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 
 public class LoginGUI extends JFrame implements ActionListener {
     JLabel userLabel, passLabel;
@@ -16,7 +13,7 @@ public class LoginGUI extends JFrame implements ActionListener {
         db = new DBHelper();
         setTitle("TaskMate Login");
         setSize(300,200);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         setLayout(null);
         userLabel = new JLabel("Username:");
         userLabel.setBounds(10,10,80,25);
@@ -46,7 +43,17 @@ public class LoginGUI extends JFrame implements ActionListener {
             }
         });
         add(registerLabel);
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                int option = JOptionPane.showConfirmDialog(LoginGUI.this, "Are you sure you want to exit?", "Exit", JOptionPane.YES_NO_OPTION,JOptionPane.WARNING_MESSAGE);
 
+                if (option == JOptionPane.NO_OPTION|| option == JOptionPane.CLOSED_OPTION) {
+                    return; // Do nothing, user canceled
+                }
+
+                System.exit(0); // Close the app manually
+            }
+        });
     }
     @Override
     public void actionPerformed(ActionEvent e) {
