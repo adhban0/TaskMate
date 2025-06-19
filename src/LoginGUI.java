@@ -54,12 +54,13 @@ public class LoginGUI extends JFrame implements ActionListener {
                 System.exit(0); // Close the app manually
             }
         });
+        getRootPane().setDefaultButton(loginBtn);
     }
     @Override
     public void actionPerformed(ActionEvent e) {
         String username = userField.getText();
-        String password = passField.getText().toString();
-        if (db.validateUser(username,password)){
+        String hashedPassword = PasswordUtil.hashPassword(passField.getText().toString());
+        if (db.validateUser(username,hashedPassword)){
             JOptionPane.showMessageDialog(this,"Login Successful!\nWelcome back "+userField.getText());
             new TaskManagerGUI(username).setVisible(true);
             dispose();

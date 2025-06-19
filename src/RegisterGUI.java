@@ -31,8 +31,8 @@ public class RegisterGUI extends JFrame{
             registerBtn.setBounds(100, 80, 100, 25);
             registerBtn.addActionListener(e -> {
                 String username = userField.getText();
-                String password = new String(passField.getPassword());
-                if (db.registerUser(username, password)) {
+                String hashedPassword = PasswordUtil.hashPassword(passField.getText().toString());
+                if (db.registerUser(username, hashedPassword)) {
                     JOptionPane.showMessageDialog(this, "User registered successfully!");
                     new TaskManagerGUI(username).setVisible(true);
                     dispose();
@@ -50,6 +50,7 @@ public class RegisterGUI extends JFrame{
                     System.exit(0); // Close the app manually
                 }
             });
+            getRootPane().setDefaultButton(registerBtn);
         }
 
     }
