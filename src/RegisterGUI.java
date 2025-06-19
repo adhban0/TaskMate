@@ -32,7 +32,7 @@ public class RegisterGUI extends JFrame{
                 String password = new String(passField.getPassword());
                 if (db.registerUser(username, password)) {
                     JOptionPane.showMessageDialog(this, "User registered successfully!");
-                    new TaskManagerGUI().setVisible(true);
+                    new TaskManagerGUI(username).setVisible(true);
                     dispose();
                 }
             });

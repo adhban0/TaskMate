@@ -54,7 +54,7 @@ public class LoginGUI extends JFrame implements ActionListener {
         String password = passField.getText().toString();
         if (db.validateUser(username,password)){
             JOptionPane.showMessageDialog(this,"Login Successful!\nWelcome back "+userField.getText());
-            new TaskManagerGUI().setVisible(true);
+            new TaskManagerGUI(username).setVisible(true);
             dispose();
         }
         else{

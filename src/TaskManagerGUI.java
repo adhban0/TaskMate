@@ -18,7 +18,7 @@ public class TaskManagerGUI extends JFrame implements ActionListener {
     private DefaultTableModel tableModel;
     private JButton addBtn, deleteBtn,editBtn,completeBtn;
     private JComboBox<String> filterBox;
-    private final String CSV_FILE = "g://tasks.csv";
+    private String CSV_FILE;
     private final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
     // Load tasks from CSV on startup
     private void loadTasksFromCSV() {
@@ -68,7 +68,8 @@ public class TaskManagerGUI extends JFrame implements ActionListener {
     }
 
 
-    public TaskManagerGUI(){
+    public TaskManagerGUI(String username){
+        CSV_FILE = "g://tasks//"+username+".csv";
         taskManager = new TaskManager();
         setTitle("TaskMate - Task Manager");
         setSize(600,400);
