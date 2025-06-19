@@ -15,6 +15,7 @@ public class RegisterGUI extends JFrame{
             setSize(300,200);
             setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
             setLayout(null);
+            setResizable(false);
             userLabel = new JLabel("Username:");
             userLabel.setBounds(10,10,80,25);
             add(userLabel);

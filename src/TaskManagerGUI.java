@@ -1,5 +1,6 @@
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -74,31 +75,20 @@ public class TaskManagerGUI extends JFrame implements ActionListener {
         setTitle("TaskMate - Task Manager");
         setSize(600,400);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-        setLayout(null);
         addBtn = new JButton("Add Task");
-        addBtn.setBounds(20, 20, 120, 30);
         addBtn.addActionListener(this);
-        add(addBtn);
 
         deleteBtn = new JButton("Delete Task");
-        deleteBtn.setBounds(160, 20, 120, 30);
         deleteBtn.addActionListener(this);
-        add(deleteBtn);
 
         editBtn = new JButton("Edit Task");
-        editBtn.setBounds(280, 20, 120, 30);
         editBtn.addActionListener(this);
-        add(editBtn);
 
         completeBtn = new JButton("Mark Completed");
-        completeBtn.setBounds(410, 20, 140, 30);
         completeBtn.addActionListener(this);
-        add(completeBtn);
 
         filterBox = new JComboBox<>(new String[]{"All", "Completed", "Incomplete"});
-        filterBox.setBounds(560, 20, 100, 30);
         filterBox.addActionListener(this);
-        add(filterBox);
 
         tableModel = new DefaultTableModel(new Object[]{"ID", "Title", "Description", "Due Date", "Completed"}, 0){
             @Override
@@ -109,11 +99,21 @@ public class TaskManagerGUI extends JFrame implements ActionListener {
         taskTable = new JTable(tableModel);
         taskTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         JScrollPane scrollPane = new JScrollPane(taskTable);
-        scrollPane.setBounds(20, 70, 550, 250);
-        add(scrollPane);
 
         loadTasksFromCSV();
         refreshTable();
+        setLayout(new BorderLayout());
+
+        JPanel topPanel = new JPanel();
+        topPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+        topPanel.add(addBtn);
+        topPanel.add(deleteBtn);
+        topPanel.add(editBtn);
+        topPanel.add(completeBtn);
+        topPanel.add(filterBox);
+
+        add(topPanel, BorderLayout.NORTH);
+        add(scrollPane, BorderLayout.CENTER);
 
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
