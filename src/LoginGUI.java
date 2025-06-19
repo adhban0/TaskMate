@@ -7,7 +7,9 @@ public class LoginGUI extends JFrame implements ActionListener {
     JTextField userField;
     JPasswordField passField;
     JButton loginBtn;
+    DBHelper db;
     public LoginGUI(){
+        db = new DBHelper();
         setTitle("TaskMate Login");
         setSize(300,150);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -30,13 +32,11 @@ public class LoginGUI extends JFrame implements ActionListener {
         add(loginBtn);
 
     }
-
     @Override
     public void actionPerformed(ActionEvent e) {
         String username = userField.getText();
-        String password = passField.getPassword().toString();
-        User testUser = new User("raafat","ali123");
-        if (testUser.validate(username,password)){
+        String password = passField.getText().toString();
+        if (db.validateUser(username,password)){
             JOptionPane.showMessageDialog(this,"Login Successful!\nWelcome back "+userField.getText());
             new TaskManagerGUI().setVisible(true);
             dispose();
