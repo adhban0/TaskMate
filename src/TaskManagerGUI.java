@@ -46,7 +46,7 @@ public class TaskManagerGUI extends JFrame implements ActionListener {
             public boolean isCellEditable(int row, int column){
                 return false;
             }
-        };//?????
+        };
         taskTable = new JTable(tableModel);
         taskTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         JScrollPane scrollPane = new JScrollPane(taskTable);
@@ -74,11 +74,11 @@ public class TaskManagerGUI extends JFrame implements ActionListener {
         });
     }
     private void loadTasksFromCSV() {
-        try (BufferedReader br = new BufferedReader(new FileReader(CSV_FILE))) {//???
+        try (BufferedReader br = new BufferedReader(new FileReader(CSV_FILE))) {
             String line;
-            br.readLine();//skips one line
-            while ((line = br.readLine()) != null) {//loads the line into the string
-                String[] parts = parseCSVLine(line);//splits the line into array of strings
+            br.readLine();
+            while ((line = br.readLine()) != null) {
+                String[] parts = parseCSVLine(line);
                 if (parts.length == 5) {
                     int id = Integer.parseInt(parts[0]);
                     String title = parts[1];
@@ -97,7 +97,7 @@ public class TaskManagerGUI extends JFrame implements ActionListener {
         }
     }
     public void saveTasksToCSV() {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(CSV_FILE))) {//????
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(CSV_FILE))) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
             writer.write("ID,Title,Description,DueDate,Completed");
             writer.newLine();
@@ -156,7 +156,7 @@ public class TaskManagerGUI extends JFrame implements ActionListener {
             }
         }
         else if (e.getSource()==editBtn) {
-            int [] rows = taskTable.getSelectedRows();//returns indices of selected rows
+            int [] rows = taskTable.getSelectedRows();
             if (rows.length == 1) {
                 int row = rows[0];
                 int id = (int) tableModel.getValueAt(row, 0);
@@ -219,10 +219,10 @@ public class TaskManagerGUI extends JFrame implements ActionListener {
         List<Task> tasks = taskManager.getTaskList();
         String filter = (String) filterBox.getSelectedItem();
         if (filter.equals("Completed")){
-            tasks = tasks.stream().filter(Task::isCompleted).collect(Collectors.toList());//?????
+            tasks = tasks.stream().filter(Task::isCompleted).collect(Collectors.toList());
         }
         else if (filter.equals("Incomplete")){
-            tasks = tasks.stream().filter(t -> !t.isCompleted()).collect(Collectors.toList());//?????
+            tasks = tasks.stream().filter(t -> !t.isCompleted()).collect(Collectors.toList());
         }
         for (Task task : tasks) {
             String completedStr = task.isCompleted() ? "Yes" : "No";
@@ -236,7 +236,7 @@ public class TaskManagerGUI extends JFrame implements ActionListener {
         }
         return text;
     }
-    private String[] parseCSVLine(String line) {//????? the whole function
+    private String[] parseCSVLine(String line) {
         List<String> result = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
         boolean insideQuotes = false;

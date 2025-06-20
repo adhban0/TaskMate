@@ -18,7 +18,7 @@ public class DBHelper {
             pst.setString(1, currentUser.getUsername());
             pst.setString(2, currentUser.getPassword());
             ResultSet rs = pst.executeQuery();
-            return rs.next(); //??????
+            return rs.next();
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
