@@ -2,7 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-public class LoginGUI extends JFrame implements ActionListener {
+public class LoginGUI extends JFrame{
     JLabel userLabel, passLabel;
     JTextField userField;
     JPasswordField passField;
@@ -30,44 +30,41 @@ public class LoginGUI extends JFrame implements ActionListener {
         add(passField);
         loginBtn = new JButton("Login");
         loginBtn.setBounds(100, 80, 80, 25);
-        loginBtn.addActionListener(this);
+        loginBtn.addActionListener(e -> {
+                    String username = userField.getText();
+                    String hashedPassword = PasswordUtil.hashPassword(passField.getText().toString());
+                    User currentUser = new User(username,hashedPassword);
+                    if (db.validateUser(currentUser)){
+                        JOptionPane.showMessageDialog(this,"Login Successful!\nWelcome back "+userField.getText());
+                        new TaskManagerGUI(username).setVisible(true);
+                        dispose();
+                    }
+                    else{
+                        JOptionPane.showMessageDialog(this,"Wrong username or password. Try again","Wrong Credentials",JOptionPane.WARNING_MESSAGE);
+                    }
+                });
         add(loginBtn);
         registerLabel = new JLabel("<HTML><U>Don't have an account? Register here</U></HTML>");
         registerLabel.setForeground(Color.BLUE);
         registerLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        registerLabel.setBounds(40, 115, 220, 25); // adjust as needed
+        registerLabel.setBounds(40, 115, 220, 25);
         registerLabel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                dispose(); // close the login window
-                new RegisterGUI().setVisible(true); // open registration window
+                dispose();
+                new RegisterGUI().setVisible(true);
             }
         });
         add(registerLabel);
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 int option = JOptionPane.showConfirmDialog(LoginGUI.this, "Are you sure you want to exit?", "Exit", JOptionPane.YES_NO_OPTION,JOptionPane.WARNING_MESSAGE);
-
                 if (option == JOptionPane.NO_OPTION|| option == JOptionPane.CLOSED_OPTION) {
-                    return; // Do nothing, user canceled
+                    return;
                 }
-
-                System.exit(0); // Close the app manually
+                System.exit(0);
             }
         });
         getRootPane().setDefaultButton(loginBtn);
-    }
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        String username = userField.getText();
-        String hashedPassword = PasswordUtil.hashPassword(passField.getText().toString());
-        if (db.validateUser(username,hashedPassword)){
-            JOptionPane.showMessageDialog(this,"Login Successful!\nWelcome back "+userField.getText());
-            new TaskManagerGUI(username).setVisible(true);
-            dispose();
-        }
-        else{
-            JOptionPane.showMessageDialog(this,"Wrong username or password. Try again","Wrong Credentials",JOptionPane.WARNING_MESSAGE);
-        }
     }
 }

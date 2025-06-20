@@ -9,13 +9,9 @@ public class TaskManager {
     public void addTask(String title, String description, LocalDateTime dueDate){
         taskList.add(new Task(id++,title,description,dueDate));
     }
-
-
-
     public void deleteTasks(List<Integer> ids) {
         taskList.removeIf(task -> ids.contains(task.getId()));
     }
-
     public ArrayList<Task> getTaskList() {
         return taskList;
     }

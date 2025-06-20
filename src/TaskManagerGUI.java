@@ -21,13 +21,64 @@ public class TaskManagerGUI extends JFrame implements ActionListener {
     private JComboBox<String> filterBox;
     private String CSV_FILE;
     private final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
-    // Load tasks from CSV on startup
+
+    public TaskManagerGUI(String username){
+        CSV_FILE = "g://tasks//"+username+".csv";
+        taskManager = new TaskManager();
+        setTitle("TaskMate - Task Manager");
+        setSize(600,400);
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        setLayout(new BorderLayout());
+        JPanel topPanel = new JPanel();
+        topPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+        addBtn = new JButton("Add Task");
+        addBtn.addActionListener(this);
+        deleteBtn = new JButton("Delete Task");
+        deleteBtn.addActionListener(this);
+        editBtn = new JButton("Edit Task");
+        editBtn.addActionListener(this);
+        completeBtn = new JButton("Mark Completed");
+        completeBtn.addActionListener(this);
+        filterBox = new JComboBox<>(new String[]{"All", "Completed", "Incomplete"});
+        filterBox.addActionListener(this);
+        tableModel = new DefaultTableModel(new Object[]{"ID", "Title", "Description", "Due Date", "Completed"}, 0){
+            @Override
+            public boolean isCellEditable(int row, int column){
+                return false;
+            }
+        };//?????
+        taskTable = new JTable(tableModel);
+        taskTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        JScrollPane scrollPane = new JScrollPane(taskTable);
+        loadTasksFromCSV();
+        refreshTable();
+        topPanel.add(addBtn);
+        topPanel.add(deleteBtn);
+        topPanel.add(editBtn);
+        topPanel.add(completeBtn);
+        topPanel.add(filterBox);
+        add(topPanel, BorderLayout.NORTH);
+        add(scrollPane, BorderLayout.CENTER);
+
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                    int option = JOptionPane.showConfirmDialog(TaskManagerGUI.this, "Do you want to save tasks before exiting?", "Exit", JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE);
+                    if (option == JOptionPane.CANCEL_OPTION || option == JOptionPane.CLOSED_OPTION) {
+                        return;
+                    }
+                    if (option == JOptionPane.YES_OPTION) {
+                        saveTasksToCSV();
+                    }
+                    System.exit(0);
+                }
+        });
+    }
     private void loadTasksFromCSV() {
-        try (BufferedReader br = new BufferedReader(new FileReader(CSV_FILE))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(CSV_FILE))) {//???
             String line;
-            br.readLine();
-            while ((line = br.readLine()) != null) {
-                String[] parts = parseCSVLine(line);//line.split(",", -1);
+            br.readLine();//skips one line
+            while ((line = br.readLine()) != null) {//loads the line into the string
+                String[] parts = parseCSVLine(line);//splits the line into array of strings
                 if (parts.length == 5) {
                     int id = Integer.parseInt(parts[0]);
                     String title = parts[1];
@@ -45,99 +96,27 @@ public class TaskManagerGUI extends JFrame implements ActionListener {
             System.out.println("No CSV to load: " + e.getMessage());
         }
     }
-
-    // Save tasks to CSV on close
     public void saveTasksToCSV() {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(CSV_FILE))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(CSV_FILE))) {//????
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
-
-            // Write header
             writer.write("ID,Title,Description,DueDate,Completed");
             writer.newLine();
-
-            // Write each task
             for (Task task : taskManager.getTaskList()) {
                 String dueDateStr = task.getDueDate() != null ? task.getDueDate().format(formatter) : "";
                 String completedStr = task.isCompleted() ? "Yes" : "No";
                 writer.write(task.getId() + "," + escape(task.getTitle()) + "," + escape(task.getDescription()) + "," + dueDateStr + "," + completedStr);
                 writer.newLine();
             }
-
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
-
-    public TaskManagerGUI(String username){
-        CSV_FILE = "g://tasks//"+username+".csv";
-        taskManager = new TaskManager();
-        setTitle("TaskMate - Task Manager");
-        setSize(600,400);
-        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-        addBtn = new JButton("Add Task");
-        addBtn.addActionListener(this);
-
-        deleteBtn = new JButton("Delete Task");
-        deleteBtn.addActionListener(this);
-
-        editBtn = new JButton("Edit Task");
-        editBtn.addActionListener(this);
-
-        completeBtn = new JButton("Mark Completed");
-        completeBtn.addActionListener(this);
-
-        filterBox = new JComboBox<>(new String[]{"All", "Completed", "Incomplete"});
-        filterBox.addActionListener(this);
-
-        tableModel = new DefaultTableModel(new Object[]{"ID", "Title", "Description", "Due Date", "Completed"}, 0){
-            @Override
-            public boolean isCellEditable(int row, int column){
-                return false;
-            }
-        };
-        taskTable = new JTable(tableModel);
-        taskTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-        JScrollPane scrollPane = new JScrollPane(taskTable);
-
-        loadTasksFromCSV();
-        refreshTable();
-        setLayout(new BorderLayout());
-
-        JPanel topPanel = new JPanel();
-        topPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-        topPanel.add(addBtn);
-        topPanel.add(deleteBtn);
-        topPanel.add(editBtn);
-        topPanel.add(completeBtn);
-        topPanel.add(filterBox);
-
-        add(topPanel, BorderLayout.NORTH);
-        add(scrollPane, BorderLayout.CENTER);
-
-        addWindowListener(new WindowAdapter() {
-            public void windowClosing(WindowEvent e) {
-                    int option = JOptionPane.showConfirmDialog(TaskManagerGUI.this, "Do you want to save tasks before exiting?", "Exit", JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE);
-
-                    if (option == JOptionPane.CANCEL_OPTION || option == JOptionPane.CLOSED_OPTION) {
-                        return; // Do nothing, user canceled
-                    }
-
-                    if (option == JOptionPane.YES_OPTION) {
-                        saveTasksToCSV();
-                    }
-                    System.exit(0); // Close the app manually
-                }
-        });
-    }
-
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == addBtn){
             JTextField titleField = new JTextField();
             JTextField descField = new JTextField();
             DateTimePicker dateField = new DateTimePicker();
-
             Object[] fields = {"Title:",titleField,"Description:",descField,"Due Date:",dateField};
             int option = JOptionPane.showConfirmDialog(this,fields,"Add New Task",JOptionPane.OK_CANCEL_OPTION);
             if (option == JOptionPane.OK_OPTION){
@@ -146,6 +125,8 @@ public class TaskManagerGUI extends JFrame implements ActionListener {
                     return;
                 }
                 LocalDateTime dueDate = dateField.getDateTimeStrict();
+                dateField.getDatePicker().getComponentDateTextField().setEditable(false);
+                dateField.getTimePicker().getComponentTimeTextField().setEditable(false);
                 if (dueDate == null && dateField.getDatePicker().getDate() != null) {
                     dueDate = dateField.getDatePicker().getDate().atTime(0, 0);
                 }
@@ -154,15 +135,12 @@ public class TaskManagerGUI extends JFrame implements ActionListener {
             }
         }
         else if (e.getSource()==deleteBtn){
-
             int [] rows  = taskTable.getSelectedRows();
-            if (rows.length >= 1){//?????
+            if (rows.length >= 1){
                 int option = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete these task(s)?", "Delete", JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE);
-
                 if (option == JOptionPane.CANCEL_OPTION || option == JOptionPane.CLOSED_OPTION || option == JOptionPane.NO_OPTION) {
-                    return; // Do nothing, user canceled
+                    return;
                 }
-
                 if (option == JOptionPane.YES_OPTION) {
                     List<Integer> ids = new ArrayList<>();
                     for (int row : rows){
@@ -178,7 +156,7 @@ public class TaskManagerGUI extends JFrame implements ActionListener {
             }
         }
         else if (e.getSource()==editBtn) {
-            int [] rows = taskTable.getSelectedRows();
+            int [] rows = taskTable.getSelectedRows();//returns indices of selected rows
             if (rows.length == 1) {
                 int row = rows[0];
                 int id = (int) tableModel.getValueAt(row, 0);
@@ -191,7 +169,6 @@ public class TaskManagerGUI extends JFrame implements ActionListener {
                     dateField.getDatePicker().getComponentDateTextField().setEditable(false);
                     dateField.getTimePicker().getComponentTimeTextField().setEditable(false);
                     Object[] fields = {"Title:",titleField,"Description:",descField,"Due Date:",dateField};
-
                     int option = JOptionPane.showConfirmDialog(this, fields, "Edit Task", JOptionPane.OK_CANCEL_OPTION);
                     if (option == JOptionPane.OK_OPTION) {
                         if (titleField.getText().trim().isEmpty()){
@@ -209,7 +186,8 @@ public class TaskManagerGUI extends JFrame implements ActionListener {
                     }
                 }
             }
-            else if (rows.length > 1){               JOptionPane.showMessageDialog(this, "Please select only one task to edit.","Unselected Task",JOptionPane.WARNING_MESSAGE);
+            else if (rows.length > 1){
+                JOptionPane.showMessageDialog(this, "Please select only one task to edit.","Too Many Tasks",JOptionPane.WARNING_MESSAGE);
             }
             else {
                 JOptionPane.showMessageDialog(this, "Please select a task to edit.","Unselected Task",JOptionPane.WARNING_MESSAGE);
@@ -258,7 +236,7 @@ public class TaskManagerGUI extends JFrame implements ActionListener {
         }
         return text;
     }
-    private String[] parseCSVLine(String line) {
+    private String[] parseCSVLine(String line) {//????? the whole function
         List<String> result = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
         boolean insideQuotes = false;
@@ -276,6 +254,4 @@ public class TaskManagerGUI extends JFrame implements ActionListener {
         result.add(sb.toString().trim());
         return result.toArray(new String[0]);
     }
-
 }
-

@@ -7,7 +7,6 @@ public class RegisterGUI extends JFrame{
         JTextField userField;
         JPasswordField passField;
         JButton registerBtn;
-        JLabel registerLabel;
         DBHelper db;
         public RegisterGUI(){
             db = new DBHelper();
@@ -33,7 +32,8 @@ public class RegisterGUI extends JFrame{
             registerBtn.addActionListener(e -> {
                 String username = userField.getText();
                 String hashedPassword = PasswordUtil.hashPassword(passField.getText().toString());
-                if (db.registerUser(username, hashedPassword)) {
+                User currentUser = new User(username,hashedPassword);
+                if (db.registerUser(currentUser)){
                     JOptionPane.showMessageDialog(this, "User registered successfully!");
                     new TaskManagerGUI(username).setVisible(true);
                     dispose();
@@ -43,15 +43,12 @@ public class RegisterGUI extends JFrame{
             addWindowListener(new WindowAdapter() {
                 public void windowClosing(WindowEvent e) {
                     int option = JOptionPane.showConfirmDialog(RegisterGUI.this, "Are you sure you want to exit?", "Exit", JOptionPane.YES_NO_OPTION,JOptionPane.WARNING_MESSAGE);
-
                     if (option == JOptionPane.NO_OPTION || option == JOptionPane.CLOSED_OPTION) {
-                        return; // Do nothing, user canceled
+                        return;
                     }
-
-                    System.exit(0); // Close the app manually
+                    System.exit(0);
                 }
             });
             getRootPane().setDefaultButton(registerBtn);
         }
-
     }
