@@ -40,7 +40,11 @@ public class LoginGUI extends JFrame{
                         dispose();
                     }
                     else{
-                        JOptionPane.showMessageDialog(this,"Wrong username or password. Try again","Wrong Credentials",JOptionPane.WARNING_MESSAGE);
+                        if (db.isLoginIsExists())
+                        {JOptionPane.showMessageDialog(this,"Wrong username or password. Try again","Wrong Credentials",JOptionPane.WARNING_MESSAGE);}
+                        else{
+                            JOptionPane.showMessageDialog(this,"Username doesn't exist. Try again","Wrong Credentials",JOptionPane.WARNING_MESSAGE);
+                        }
                     }
                 });
         add(loginBtn);

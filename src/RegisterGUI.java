@@ -38,6 +38,11 @@ public class RegisterGUI extends JFrame{
                     new TaskManagerGUI(username).setVisible(true);
                     dispose();
                 }
+                else{
+                    if (db.isRegisterIsExists()){
+                        JOptionPane.showMessageDialog(this,"This username already exists","Wrong Credentials",JOptionPane.WARNING_MESSAGE);
+                    }
+                }
             });
             add(registerBtn);
             addWindowListener(new WindowAdapter() {
