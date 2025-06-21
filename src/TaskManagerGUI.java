@@ -117,6 +117,8 @@ public class TaskManagerGUI extends JFrame implements ActionListener {
             JTextField titleField = new JTextField();
             JTextField descField = new JTextField();
             DateTimePicker dateField = new DateTimePicker();
+            dateField.getDatePicker().getComponentDateTextField().setEditable(false);
+            dateField.getTimePicker().getComponentTimeTextField().setEditable(false);
             Object[] fields = {"Title:",titleField,"Description:",descField,"Due Date:",dateField};
             int option = JOptionPane.showConfirmDialog(this,fields,"Add New Task",JOptionPane.OK_CANCEL_OPTION);
             if (option == JOptionPane.OK_OPTION){
@@ -125,8 +127,6 @@ public class TaskManagerGUI extends JFrame implements ActionListener {
                     return;
                 }
                 LocalDateTime dueDate = dateField.getDateTimeStrict();
-                dateField.getDatePicker().getComponentDateTextField().setEditable(false);
-                dateField.getTimePicker().getComponentTimeTextField().setEditable(false);
                 if (dueDate == null && dateField.getDatePicker().getDate() != null) {
                     dueDate = dateField.getDatePicker().getDate().atTime(0, 0);
                 }
@@ -195,7 +195,7 @@ public class TaskManagerGUI extends JFrame implements ActionListener {
         }
         else if (e.getSource()==completeBtn){
             int [] rows  = taskTable.getSelectedRows();
-            if (rows.length >= 0){
+            if (rows.length >= 1){
                 for (int row : rows){
                     int id = (int) tableModel.getValueAt(row, 0);
                     Task task = taskManager.getTask(id);
