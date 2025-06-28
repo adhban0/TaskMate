@@ -92,8 +92,8 @@ public class TaskManagerGUI extends JFrame implements ActionListener {
                     {created.setCompleted(true);}
                 }
             }
-        } catch (IOException e) {
-            System.out.println("No CSV to load: " + e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
     public void saveTasksToCSV() {
@@ -107,7 +107,7 @@ public class TaskManagerGUI extends JFrame implements ActionListener {
                 writer.write(task.getId() + "," + escape(task.getTitle()) + "," + escape(task.getDescription()) + "," + dueDateStr + "," + completedStr);
                 writer.newLine();
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
