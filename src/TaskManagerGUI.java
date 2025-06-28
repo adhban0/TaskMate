@@ -83,8 +83,7 @@ public class TaskManagerGUI extends JFrame implements ActionListener {
                     int id = Integer.parseInt(parts[0]);
                     String title = parts[1];
                     String description = parts[2];
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
-                    LocalDateTime dueDate = parts[3].isEmpty() ? null : LocalDateTime.parse(parts[3], formatter);
+                    LocalDateTime dueDate = parts[3].isEmpty() ? null : LocalDateTime.parse(parts[3], FORMATTER);
                     String completedStr = parts[4];
                     taskManager.addTask(title, description, dueDate);
                     Task created = taskManager.getTaskList().get(taskManager.getTaskList().size() - 1);
@@ -98,11 +97,10 @@ public class TaskManagerGUI extends JFrame implements ActionListener {
     }
     public void saveTasksToCSV() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(CSV_FILE))) {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
             writer.write("ID,Title,Description,DueDate,Completed");
             writer.newLine();
             for (Task task : taskManager.getTaskList()) {
-                String dueDateStr = task.getDueDate() != null ? task.getDueDate().format(formatter) : "";
+                String dueDateStr = task.getDueDate() != null ? task.getDueDate().format(FORMATTER) : "";
                 String completedStr = task.isCompleted() ? "Yes" : "No";
                 writer.write(task.getId() + "," + escape(task.getTitle()) + "," + escape(task.getDescription()) + "," + dueDateStr + "," + completedStr);
                 writer.newLine();
