@@ -23,7 +23,7 @@ public class TaskManagerGUI extends JFrame implements ActionListener {
     private final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 
     public TaskManagerGUI(String username){
-        CSV_FILE = "g://tasks//"+username+".csv";
+        CSV_FILE = "e://tasks//"+username+".csv";
         taskManager = new TaskManager();
         setTitle("TaskMate - Task Manager");
         setSize(600,400);

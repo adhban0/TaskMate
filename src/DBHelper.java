@@ -2,7 +2,7 @@ import javax.swing.*;
 import java.sql.*;
 
 public class DBHelper {
-    private static final String DB_URL = "jdbc:ucanaccess://G:/users.accdb";
+    private static final String DB_URL = "jdbc:ucanaccess://E:/users.accdb";
     private Connection con;
     private boolean loginIsExists = true;
     private boolean registerIsExists = false;
